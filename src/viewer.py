@@ -42,9 +42,13 @@ class Viewer:
                 self.__need_reload = False
             self.__draw_texture()
 
+    def paint_quadstrip(self):
+        if self.__loaded:
+            self.__draw_quadstrip()
+
     def __transfer_function(self, value: int):
         min, max = 0, 2000
-        newValue = int(np.clip((value-min)*255/(max-min), 0, 255))
+        newValue = (np.clip((value-min)*255/(max-min), 0, 255)).astype(np.uint8)
         return newValue, newValue, newValue, 255
 
     def __draw_quads(self):
@@ -64,7 +68,7 @@ class Viewer:
                 gl.glColor(self.__transfer_function(value))
                 gl.glVertex(x+1, y+1)
 
-                value = self.__array[(x+1)+(y+1)*self.__x+self.__current_layer*self.__x*self.__y]
+                value = self.__array[(x+1)+y*self.__x+self.__current_layer*self.__x*self.__y]
                 gl.glColor(self.__transfer_function(value))
                 gl.glVertex(x+1, y)
         gl.glEnd()
@@ -105,3 +109,32 @@ class Viewer:
 
         gl.glEnd()
         gl.glDisable(gl.GL_TEXTURE_2D)
+
+    def __draw_quadstrip(self):
+        gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT )
+        for y in range(self.__y-1):
+            gl.glBegin(gl.GL_QUAD_STRIP)
+            value = self.__array[0+y*self.__x+self.__current_layer*self.__x*self.__y]
+            gl.glColor(self.__transfer_function(value))
+            gl.glVertex(0, y)
+
+            value = self.__array[0+(y+1)*self.__x+self.__current_layer*self.__x*self.__y]
+            gl.glColor(self.__transfer_function(value))
+            gl.glVertex(0, y+1)
+
+            value = self.__array[1+(y+1)*self.__x+self.__current_layer*self.__x*self.__y]
+            gl.glColor(self.__transfer_function(value))
+            gl.glVertex(1, y+1)
+
+            value = self.__array[1+(y+1)*self.__x+self.__current_layer*self.__x*self.__y]
+            gl.glColor(self.__transfer_function(value))
+            gl.glVertex(1, y)
+            for x in range(2, self.__x):
+                value = self.__array[x+y*self.__x+self.__current_layer*self.__x*self.__y]
+                gl.glColor(self.__transfer_function(value))
+                gl.glVertex(x, y)
+
+                value = self.__array[x+(y+1)*self.__x+self.__current_layer*self.__x*self.__y]
+                gl.glColor(self.__transfer_function(value))
+                gl.glVertex(x, y+1)
+            gl.glEnd()

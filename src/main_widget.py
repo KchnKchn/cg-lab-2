@@ -11,10 +11,11 @@ class GUI(QtWidgets.QWidget):
     __glWidget = glWidget()
     __slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
     __draws = {
-        "Прямоугольники 4*n вершин" : __viewer.paint_quads,
-        "Текстурирование" : __viewer.paint_texture
+        "Текстурирование" : __viewer.paint_texture,
+        "Прямоугольники 2*n + 2 вершин" : __viewer.paint_quadstrip,
+        "Прямоугольники 4*n вершин" : __viewer.paint_quads
     }
-    __curr_draw = "Прямоугольники 4*n вершин"
+    __curr_draw = "Текстурирование"
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -22,11 +23,15 @@ class GUI(QtWidgets.QWidget):
         self.__setup_main_widget()
 
     def __setup_main_widget(self):
-        self.__glWidget.render.connect(self.__viewer.paint_quads)
+        self.__glWidget.render.connect(self.__viewer.paint_texture)
         self.__grid.addWidget(self.__glWidget, 0, 0, 5, 4)
 
         self.__slider.sliderReleased.connect(self.__connect_value_changed)
         self.__grid.addWidget(self.__slider, 6, 0)
+        self.__curr_slider = QtWidgets.QLabel()
+        self.__curr_slider.setText("0")
+        self.__grid.addWidget(self.__curr_slider, 6, 5)
+        
 
         button = QtWidgets.QPushButton()
         button.setText("Open Tomogram")
@@ -50,6 +55,7 @@ class GUI(QtWidgets.QWidget):
 
     def __connect_value_changed(self):
         value = self.__slider.value()
+        self.__curr_slider.setText(str(value))
         self.__viewer.set_layer(value)
         self.__start_render()
 
@@ -57,8 +63,9 @@ class GUI(QtWidgets.QWidget):
         tomogram_path = QtWidgets.QFileDialog.getOpenFileName(self, "Open Tomogram", ".")[0]
         if not tomogram_path: return
         shape, tomogram = self.__reader.Read(tomogram_path)
-        self.__slider.setRange(0, shape[2])
+        self.__slider.setRange(0, shape[2]-1)
         self.__slider.setValue(0)
+        self.__curr_slider.setText("0")
         self.__viewer.set_tomogram(shape, tomogram)
         w, h = self.__glWidget.size().width(), self.__glWidget.size().height()
         self.__viewer.setup_view(w, h)
