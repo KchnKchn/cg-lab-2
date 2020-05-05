@@ -31,7 +31,6 @@ class GUI(QtWidgets.QWidget):
         self.__curr_slider = QtWidgets.QLabel()
         self.__curr_slider.setText("0")
         self.__grid.addWidget(self.__curr_slider, 6, 5)
-        
 
         button = QtWidgets.QPushButton()
         button.setText("Open Tomogram")

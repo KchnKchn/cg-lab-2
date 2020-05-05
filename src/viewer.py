@@ -116,23 +116,7 @@ class Viewer:
         for y in range(self.__y-1):
             gl.glBegin(gl.GL_QUAD_STRIP)
 
-            value = self.__array[0+y*self.__x+self.__current_layer*self.__x*self.__y]
-            gl.glColor4ub(*self.__transfer_function(value))
-            gl.glVertex(0, y)
-
-            value = self.__array[0+(y+1)*self.__x+self.__current_layer*self.__x*self.__y]
-            gl.glColor4ub(*self.__transfer_function(value))
-            gl.glVertex(0, y+1)
-
-            value = self.__array[1+(y+1)*self.__x+self.__current_layer*self.__x*self.__y]
-            gl.glColor4ub(*self.__transfer_function(value))
-            gl.glVertex(1, y+1)
-
-            value = self.__array[1+y*self.__x+self.__current_layer*self.__x*self.__y]
-            gl.glColor4ub(*self.__transfer_function(value))
-            gl.glVertex(1, y)
-
-            for x in range(2, self.__x):
+            for x in range(self.__x):
                 value = self.__array[x+y*self.__x+self.__current_layer*self.__x*self.__y]
                 gl.glColor4ub(*self.__transfer_function(value))
                 gl.glVertex(x, y)
