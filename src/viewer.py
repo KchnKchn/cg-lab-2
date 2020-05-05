@@ -50,8 +50,8 @@ class Viewer:
     def __draw_quads(self):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT )
         gl.glBegin(gl.GL_QUADS)
-        for x in range(self.__x - 1):
-            for y in range(self.__y - 1):
+        for x in range(self.__x-1):
+            for y in range(self.__y-1):
                 value = self.__array[x][y][self.__current_layer]
                 r, g, b, a = self.__transfer_function(value)
                 gl.glColor(r, g, b, a)
@@ -82,13 +82,13 @@ class Viewer:
 
     def __load_2d_texture(self):
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.__vbo_texture)
-        gl.glTexParameter(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE);
-        gl.glTexParameter(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE);
+        gl.glTexParameter(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE)
+        gl.glTexParameter(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE)
         gl.glTexParameter(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR)
         gl.glTexParameter(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
         gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA,
-            self.__x, self.__y, 0, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE,
-            self.__texture)
+            self.__x, self.__y, 0, gl.GL_RGBA, 
+            gl.GL_UNSIGNED_BYTE, self.__texture)
 
     def __draw_texture(self):
         gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT )
