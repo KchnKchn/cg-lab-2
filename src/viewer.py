@@ -70,16 +70,14 @@ class Viewer:
         gl.glEnd()
 
     def __generate_texture_image(self):
-        self.__texture = np.zeros(shape=(self.__x, self.__y, 4), dtype=np.uint8)
+        self.__texture = np.zeros(shape=(self.__y, self.__x, 4), dtype=np.uint8)
         for x in range(self.__x):
             for y in range(self.__y):
                 value = self.__array[x+y*self.__x+self.__current_layer*self.__x*self.__y]
-                self.__texture[x][y] = self.__transfer_function(value)
+                self.__texture[y][x] = self.__transfer_function(value)
 
     def __load_2d_texture(self):
         gl.glBindTexture(gl.GL_TEXTURE_2D, self.__vbo_texture)
-        gl.glTexParameter(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_S, gl.GL_CLAMP_TO_EDGE)
-        gl.glTexParameter(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_WRAP_T, gl.GL_CLAMP_TO_EDGE)
         gl.glTexParameter(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR)
         gl.glTexParameter(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
         gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA,
