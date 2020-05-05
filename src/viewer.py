@@ -11,8 +11,8 @@ class Viewer:
     __loaded = False
     __need_reload = True
 
-    def set_tomogram(self, array: np.ndarray):
-        self.__x, self.__y, self.__z = array.shape
+    def set_tomogram(self, shape: tuple, array: np.ndarray):
+        self.__x, self.__y, self.__z = shape
         self.__array = array
         self.__loaded = True
         self.__need_reload = True
@@ -44,7 +44,7 @@ class Viewer:
 
     def __transfer_function(self, value: int):
         min, max = 0, 2000
-        newValue = np.clip((value-min)*255/(max-min), 0, 255)
+        newValue = int(np.clip((value-min)*255/(max-min), 0, 255))
         return newValue, newValue, newValue, 255
 
     def __draw_quads(self):
@@ -52,24 +52,20 @@ class Viewer:
         gl.glBegin(gl.GL_QUADS)
         for x in range(self.__x-1):
             for y in range(self.__y-1):
-                value = self.__array[x][y][self.__current_layer]
-                r, g, b, a = self.__transfer_function(value)
-                gl.glColor(r, g, b, a)
+                value = self.__array[x+y*self.__x+self.__current_layer*self.__x*self.__y]
+                gl.glColor(self.__transfer_function(value))
                 gl.glVertex(x, y)
 
-                value = self.__array[x][y+1][self.__current_layer]
-                r, g, b, a = self.__transfer_function(value)
-                gl.glColor(r, g, b, a)
+                value = self.__array[x+(y+1)*self.__x+self.__current_layer*self.__x*self.__y]
+                gl.glColor(self.__transfer_function(value))
                 gl.glVertex(x, y+1)
 
-                value = self.__array[x+1][y+1][self.__current_layer]
-                r, g, b, a = self.__transfer_function(value)
-                gl.glColor(r, g, b, a)
+                value = self.__array[(x+1)+(y+1)*self.__x+self.__current_layer*self.__x*self.__y]
+                gl.glColor(self.__transfer_function(value))
                 gl.glVertex(x+1, y+1)
 
-                value = self.__array[x+1][y][self.__current_layer]
-                r, g, b, a = self.__transfer_function(value)
-                gl.glColor(r, g, b, a)
+                value = self.__array[(x+1)+(y+1)*self.__x+self.__current_layer*self.__x*self.__y]
+                gl.glColor(self.__transfer_function(value))
                 gl.glVertex(x+1, y)
         gl.glEnd()
 
@@ -77,7 +73,7 @@ class Viewer:
         self.__texture = np.zeros(shape=(self.__x, self.__y, 4), dtype=np.uint8)
         for x in range(self.__x):
             for y in range(self.__y):
-                value = self.__array[x][y][self.__current_layer]
+                value = self.__array[x+y*self.__x+self.__current_layer*self.__x*self.__y]
                 self.__texture[x][y] = self.__transfer_function(value)
 
     def __load_2d_texture(self):

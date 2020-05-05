@@ -56,10 +56,10 @@ class GUI(QtWidgets.QWidget):
     def __connect_open_tomogram(self):
         tomogram_path = QtWidgets.QFileDialog.getOpenFileName(self, "Open Tomogram", ".")[0]
         if not tomogram_path: return
-        tomogram = self.__reader.Read(tomogram_path)
-        self.__slider.setRange(0, tomogram.shape[2])
+        shape, tomogram = self.__reader.Read(tomogram_path)
+        self.__slider.setRange(0, shape[2])
         self.__slider.setValue(0)
-        self.__viewer.set_tomogram(tomogram)
+        self.__viewer.set_tomogram(shape, tomogram)
         w, h = self.__glWidget.size().width(), self.__glWidget.size().height()
         self.__viewer.setup_view(w, h)
     
