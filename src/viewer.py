@@ -4,6 +4,7 @@ import OpenGL.GL as gl
 class Viewer:
 
     __x, __y, __z = None, None, None
+    __min, __max = 0, 2000
     __array = None
     __texture = None
     __current_layer = 0
@@ -17,6 +18,11 @@ class Viewer:
         self.__loaded = True
         self.__need_reload = True
         __current_layer = 0
+
+    def set_transfer_parameters(self, min: int, lenght: int):
+        self.__min = min
+        self.__max = min + lenght
+        self.__need_reload = True
 
     def set_layer(self, layer: int):
         self.__current_layer = layer
@@ -47,8 +53,7 @@ class Viewer:
             self.__draw_quadstrip()
 
     def __transfer_function(self, value: int):
-        min, max = 0, 2000
-        newValue = (np.clip((value-min)*255/(max-min), 0, 255)).astype(np.uint8)
+        newValue = (np.clip((value-self.__min)*255/(self.__max-self.__min), 0, 255)).astype(np.uint8)
         return newValue, newValue, newValue, 255
 
     def __draw_quads(self):
